@@ -1,9 +1,9 @@
-// const express = require("express");
-// const { insertNin, validateNin } = require("../config/apiAdapter");
+const express = require("express");
+const { insertNin, validateNin } = require("../controllers/ninController");
 
-// const router = express.Router();
+const router = express.Router();
 
-// router.post("/insertNin", insertNin);
-// router.post("/validateNin", validateNin);
+router.post("/insertNin", insertNin);
+router.post("/validateNin", validateNin);
 
-// module.exports = router;
+module.exports = router;

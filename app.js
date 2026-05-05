@@ -12,7 +12,7 @@ const globalErrorHandler = require("./controllers/errorController");
 const nibssRoute = require("./routes/nibssRoute");
 // const authTokenRoute = require("./routes/authTokenRoute");
 // const bvnRoute = require("./routes/bvnRoute");
-// const ninRoute = require("./routes/ninRoute");
+const ninRoute = require("./routes/ninRoute");
 const account = require("./routes/accountRoutes");
 const userRoute = require("./routes/userRoute");
 const transferRoute = require("./routes/transferRoute");
@@ -42,10 +42,10 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Routes
-// app.use("/api/fintech", nibssRoute);
+app.use("/api/fintech", nibssRoute);
 // app.use("/api/auth", authTokenRoute);
 // app.use("/api/", bvnRoute);
-// app.use("/api/", ninRoute);
+app.use("/api/", ninRoute);
 // app.use("/api/", account);
 app.use("/api/user", userRoute);
 app.use("/api/transfer", transferRoute);

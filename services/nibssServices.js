@@ -9,9 +9,9 @@ class NibssService {
   // ─── Auth ──────────────────────────────────────────────────────────────────
 
   static async #getValidToken() {
-    // if (this.#token && this.#tokenExpiry > Date.now()) {
-    //   return this.#token;
-    // }
+    if (this.#token && this.#tokenExpiry > Date.now()) {
+      return this.#token;
+    }
 
     const response = await fetch(`${this.BASE_URL}/auth/token`, {
       method: "POST",
@@ -183,6 +183,31 @@ class NibssService {
     );
     console.log(`✅ [TSQ] Status: ${result.status}`);
     return result; // { transactionId, status, amount, from, to, timestamp }
+  }
+
+  // ─── NIN ──────────────────────────────────────────────────────────────────
+
+  static async insertNin(data) {
+    if (!data.nin || data.nin.length !== 11) {
+      throw new Error("Invalid BVN: must be 11 digits");
+    }
+
+    const response = await fetch(`${this.BASE_URL}/insertNin`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({}));
+      throw new Error(error.message || "Nin insertion failed");
+    }
+
+    return response.json();
+  }
+
+  static async validateNin(nin) {
+    return this.#authorizedRequest("/validateNin", "POST", { nin });
   }
 }
 

@@ -1,8 +1,8 @@
-// const express = require("express");
-// const nibssAdaptor = require("../config/apiAdapter");
+const express = require("express");
+const fintechOnboard = require("../controllers/fintechOnboard");
 
-// const router = express.Router();
+const router = express.Router();
 
-// router.post("/onboard", nibssAdaptor.onboard);
+router.post("/onboard", fintechOnboard);
 
-// module.exports = router;
+module.exports = router;
