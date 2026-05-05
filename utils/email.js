@@ -1,5 +1,10 @@
 const nodemailer = require("nodemailer");
-const { welcomeEmail, passwordResetEmail } = require("./emailTemplates");
+const {
+  welcomeEmail,
+  passwordResetEmail,
+  transferCreditEmail,
+  transferDebitEmail,
+} = require("./emailTemplates");
 
 // exports.sendEmail = async ({ to, subject, html }) => {
 //   const transporter = nodemailer.createTransport({

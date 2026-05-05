@@ -90,7 +90,7 @@ exports.internalTransfer = catchAsync(async (req, res) => {
   );
 
   const senderAccount = await Account.findOne({ user: sender._id });
-  console.log("senderAcount:", senderAccount);
+  console.log("senderAcount:", senderAccount.balance);
   // 1. Name enquiry — confirms recipient account exists on NIBSS
   let recipientInfo;
   try {
@@ -117,14 +117,18 @@ exports.internalTransfer = catchAsync(async (req, res) => {
   }
 
   const reference = generateReference();
-  console.log("senderAccount:", senderAccont);
-  console.log("senderAccount.accountNumber:", senderAccont.accountNumber);
-
+  console.log("senderAccount:", senderAccount);
+  console.log("senderAccount.accountNumber:", senderAccount.accountNumber);
+  console.log("Transfer payload:", {
+    from: senderAccount.accountNumber,
+    to: toAccountNumber,
+    amount,
+  });
   // 4. Execute via NIBSS
   let nibssResult;
   try {
     nibssResult = await NibssService.transfer({
-      from: sender.accountNumber,
+      from: senderAccount.accountNumber,
       to: toAccountNumber,
       amount,
     });
@@ -148,7 +152,15 @@ exports.internalTransfer = catchAsync(async (req, res) => {
   }
 
   // 5. Debit sender locally after NIBSS confirms success
-  await User.findByIdAndUpdate(sender._id, { $inc: { balance: -amount } });
+  const updatedAccount = await Account.findOneAndUpdate(
+    sender.account,
+    { $inc: { balance: -amount } },
+    { new: true }, // VERY IMPORTANT
+  );
+
+  if (!updatedAccount) {
+    throw new Error("Failed to update account balance");
+  }
 
   // 6. Record successful transfer
   const transfer = await Transfer.create({
@@ -168,8 +180,8 @@ exports.internalTransfer = catchAsync(async (req, res) => {
     accountNumber: toAccountNumber,
     bankName: recipientInfo.bankName,
     reference,
-    newBalance: sender.balance - amount,
-    transactionId: nibssResult.transactionId,
+    newBalance: updatedAccount.balance,
+    transactionId: nibssResult.reference,
   }).catch(() => {});
 
   return res.status(200).json({
@@ -177,12 +189,12 @@ exports.internalTransfer = catchAsync(async (req, res) => {
     message: "Transfer successful",
     data: {
       reference: transfer.reference,
-      transactionId: nibssResult.transactionId,
+      transactionId: nibssResult.reference,
       amount,
       recipient: recipientInfo.accountName,
       recipientAccount: toAccountNumber,
       recipientBank: recipientInfo.bankName,
-      newBalance: sender.balance - amount,
+      newBalance: updatedAccount.balance,
       timestamp: transfer.timestamp,
     },
   });
@@ -259,12 +271,21 @@ exports.externalTransfer = catchAsync(async (req, res) => {
   }
 
   // 5. Debit sender only after NIBSS confirms
-  await User.findByIdAndUpdate(sender._id, { $inc: { balance: -amount } });
+  const senderAccount = await Account.findOnedAndUpdate(
+    sender.account,
+    { $inc: { balance: -amount } },
+    { new: true }, // VERY IMPORTANT
+  );
+
+  if (!senderAccount) {
+    throw new Error("Insufficient balance or update failed");
+  }
 
   // 6. Update transfer to SUCCESS with NIBSS response
   await Transfer.findByIdAndUpdate(transfer._id, {
     status: "success",
     rawResponse: nibssResult,
+    newBalance: senderAccount.balance - amount,
   });
 
   // 7. Send debit alert (non-blocking)
@@ -274,8 +295,8 @@ exports.externalTransfer = catchAsync(async (req, res) => {
     accountNumber: toAccountNumber,
     bankName: recipientInfo.bankName,
     reference,
-    newBalance: sender.balance - amount,
-    transactionId: nibssResult.transactionId,
+    newBalance: senderAccount.balance,
+    transactionId: nibssResult.reference,
     narration,
   }).catch(() => {});
 
@@ -284,12 +305,12 @@ exports.externalTransfer = catchAsync(async (req, res) => {
     message: "External transfer successful",
     data: {
       reference,
-      transactionId: nibssResult.transactionId,
+      transactionId: nibssResult.reference,
       amount,
       recipient: recipientInfo.accountName,
       recipientAccount: toAccountNumber,
       recipientBank: recipientInfo.bankName,
-      newBalance: sender.balance - amount,
+      newBalance: senderAccount.balance,
       narration,
       timestamp: new Date(),
     },

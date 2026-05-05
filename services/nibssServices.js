@@ -9,9 +9,9 @@ class NibssService {
   // ─── Auth ──────────────────────────────────────────────────────────────────
 
   static async #getValidToken() {
-    if (this.#token && this.#tokenExpiry > Date.now()) {
-      return this.#token;
-    }
+    // if (this.#token && this.#tokenExpiry > Date.now()) {
+    //   return this.#token;
+    // }
 
     const response = await fetch(`${this.BASE_URL}/auth/token`, {
       method: "POST",
@@ -50,6 +50,9 @@ class NibssService {
 
     const response = await fetch(`${this.BASE_URL}${path}`, options);
     const data = await response.json().catch(() => ({}));
+
+    console.log("NIBSS Response Status:", response.status);
+    console.log("NIBSS Response Body:", JSON.stringify(data, null, 2));
 
     if (!response.ok) {
       throw new Error(data.message || `NIBSS error: HTTP ${response.status}`);
@@ -120,9 +123,29 @@ class NibssService {
   // Initiate interbank transfer via NIBSS settlement layer
   // Returns { transactionId, status, amount, from, to }
   static async transfer({ from, to, amount }) {
-    if (!from || !to || !amount) {
+    // ✅ Add this first
+    console.log("🔍 NibssService.transfer() called with:", {
+      from,
+      to,
+      amount,
+    });
+    console.log("Types:", {
+      from: typeof from,
+      to: typeof to,
+      amount: typeof amount,
+    });
+    console.log("Falsy check:", {
+      fromFalsy: !from,
+      toFalsy: !to,
+      amountFalsy: !amount,
+    });
+
+    const numericAmount = Number(amount);
+
+    if (!from || !to || !numericAmount) {
       throw new Error("from, to and amount are required for transfer");
     }
+    // ... rest of method
 
     if (from === to) {
       throw new Error(
@@ -142,7 +165,9 @@ class NibssService {
       amount: String(amount), // NIBSS expects amount as string
     });
 
-    console.log(`✅ [transfer] Success — TxID: ${result.transactionId}`);
+    console.log(
+      `✅ [transfer] Success — TxID: ${result.transactionId || result.reference}`,
+    );
     return result; // { message, transactionId, amount, from, to, status }
   }
 
