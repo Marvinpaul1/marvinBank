@@ -1,9 +1,8 @@
-// const express = require("express");
-// const { insertBvn, validateBvn } = require("../config/apiAdapter");
+const express = require("express");
+const { validateBvn } = require("../controllers/bvnController");
 
-// const router = express.Router();
+const router = express.Router();
 
-// router.post("/insertBvn", insertBvn);
-// router.post("/validateBvn", validateBvn);
+router.post("/validateBvn", validateBvn);
 
-// module.exports = router;
+module.exports = router;

@@ -4,14 +4,13 @@ const hpp = require("hpp");
 const cors = require("cors");
 
 const helmet = require("helmet");
-const monogoSanitize = require("express-mongo-sanitize");
+const mongoSanitize = require("express-mongo-sanitize");
 const AppError = require("./utils/appError");
 const globalErrorHandler = require("./controllers/errorController");
 
 // Routes imports
 const nibssRoute = require("./routes/nibssRoute");
-// const authTokenRoute = require("./routes/authTokenRoute");
-// const bvnRoute = require("./routes/bvnRoute");
+const bvnRoute = require("./routes/bvnRoute");
 const ninRoute = require("./routes/ninRoute");
 const account = require("./routes/accountRoutes");
 const userRoute = require("./routes/userRoute");
@@ -28,25 +27,31 @@ app.use(
     allowedHeaders: ["Content-Type", "Authorization"],
   }),
 );
-// app.use(
-//   monogoSanitize({
-//     allowDots: true,
-//     replaceWith: "_",
-//   }),
-// );
+app.use((req, res, next) => {
+  if (req.body) {
+    const sanitize = (obj) => {
+      for (const key in obj) {
+        if (key.startsWith("$")) {
+          delete obj[key];
+        } else if (typeof obj[key] === "object" && obj[key] !== null) {
+          sanitize(obj[key]);
+        }
+      }
+    };
+    sanitize(req.body);
+  }
+  next();
+});
 app.use(hpp());
-
-// Global Rate limiter
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Routes
 app.use("/api/fintech", nibssRoute);
-// app.use("/api/auth", authTokenRoute);
-// app.use("/api/", bvnRoute);
+app.use("/api/", bvnRoute);
 app.use("/api/", ninRoute);
-// app.use("/api/", account);
+app.use("/api/", account);
 app.use("/api/user", userRoute);
 app.use("/api/transfer", transferRoute);
 

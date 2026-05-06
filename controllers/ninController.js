@@ -27,17 +27,17 @@ exports.insertNin = catchAsync(async (req, res, next) => {
 });
 
 exports.validateNin = catchAsync(async (req, res) => {
-  const ninPayload = req.body;
+  const { nin } = req.body;
+
+  if (!nin) {
+    return res.status(400).json({
+      status: "fail",
+      message: "NIN is required",
+    });
+  }
 
   try {
-    if (!ninPayload?.nin) {
-      return res.status(400).json({
-        status: "fail",
-        message: "NIN is required",
-      });
-    }
-
-    const ninResponse = await NibssServices.validateNin(ninPayload);
+    const ninResponse = await NibssServices.validateNin(nin);
 
     return res.status(200).json({
       status: "success",
@@ -48,7 +48,7 @@ exports.validateNin = catchAsync(async (req, res) => {
 
     return res.status(400).json({
       status: "fail",
-      message: err.response?.data?.message || "Onboarding failed",
+      message: err.response?.data?.message || "Nin validation failed",
       error: err.response?.data,
     });
   }

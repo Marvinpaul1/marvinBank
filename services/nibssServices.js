@@ -118,6 +118,10 @@ class NibssService {
     return this.#authorizedRequest(`/account/balance/${accountNumber}`);
   }
 
+  static async getAllAccounts() {
+    return this.#authorizedRequest(`/accounts`);
+  }
+
   // ─── Transfer ─────────────────────────────────────────────────────────────
 
   // Initiate interbank transfer via NIBSS settlement layer

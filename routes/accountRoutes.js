@@ -1,13 +1,13 @@
-// const express = require("express");
-// const {
-//   getAccountName,
-//   getAllAccounts,
-//   checkBalance,
-// } = require("../config/apiAdapter");
+const express = require("express");
+const {
+  nameEnquiry,
+  accounts,
+  getBalance,
+} = require("../controllers/accountController");
 
-// const router = express.Router();
-// router.get("/account/name-enquiry/:accountNumber", getAccountName);
-// router.get("/accounts", getAllAccounts);
-// router.get("/account/balance/:accountNumber", checkBalance);
+const router = express.Router();
+router.get("/account/name-enquiry/:accountNumber", nameEnquiry);
+router.get("/accounts", accounts);
+router.get("/account/balance/:accountNumber", getBalance);
 
-// module.exports = router;
+module.exports = router;
