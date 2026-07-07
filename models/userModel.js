@@ -67,6 +67,7 @@ const userSchema = new mongoose.Schema(
     },
     pin: {
       type: String,
+      required: [true, "Transaction Pin is required"],
       select: false,
     },
 

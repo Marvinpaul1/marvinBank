@@ -46,31 +46,11 @@ Marvin Bank is a world-class fintech backend application designed to simulate mo
     npm install
     ```
 
-3.  **Environment Configuration**:
-    Create a `config.env` file in the root directory and populate it with the following variables:
-
-    ```env
-    NODE_ENV=development
-    PORT=8000
-    DATABASE_LOCAL=mongodb://localhost:27017/marvinBank
-
-    JWT_SECRET=your_super_secret_jwt_key
-    JWT_EXPIRES_IN=90d
-    JWT_COOKIE_EXPIRES_IN=90
-
-    NIBSS_API_KEY=your_nibss_api_key
-    NIBSS_SECRET_KEY=your_nibss_secret_key
-
-    EMAIL_FROM=support@marvinbank.com
-    EMAIL_TEST_HOST=smtp.mailtrap.io
-    EMAIL_TEST_PORT=2525
-    EMAIL_TEST_USERNAME=your_mailtrap_username
-    EMAIL_TEST_PASSWORD=your_mailtrap_password
-
-    DAILY_TRANSFER_LIMIT=1000000
     ```
 
-4.  **Start the server**:
+    ```
+
+3.  **Start the server**:
     ```bash
     # Development mode
     npm start
@@ -107,4 +87,4 @@ The project uses a global error-handling middleware to provide consistent respon
 
 ---
 
-© 2024 Marvin Bank Engineering.
+© 2026 Marvin Bank Engineering.

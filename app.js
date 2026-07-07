@@ -4,7 +4,6 @@ const hpp = require("hpp");
 const cors = require("cors");
 
 const helmet = require("helmet");
-const mongoSanitize = require("express-mongo-sanitize");
 const AppError = require("./utils/appError");
 const globalErrorHandler = require("./controllers/errorController");
 

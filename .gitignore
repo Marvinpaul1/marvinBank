@@ -1,3 +1,4 @@
-#Envirable variables
-.env
+# #Envirable variables
+.node_modules/
+*.env
 .env.local

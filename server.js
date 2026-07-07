@@ -1,8 +1,8 @@
 const dotenv = require("dotenv");
+dotenv.config({ path: "./config.env" });
 
 // Load environment variables from .env file
 
-dotenv.config({ path: "./config.env" });
 const result = dotenv.config({ path: "./config.env" });
 if (result.error) {
   console.error("Error loading config.env file:", result.error);
@@ -15,6 +15,7 @@ const cron = require("node-cron");
 const axios = require("axios");
 
 const app = require("./app");
+app.set("query parser", "extended");
 
 cron.schedule(" */10 * * * * *", async () => {
   try {
@@ -27,15 +28,25 @@ cron.schedule(" */10 * * * * *", async () => {
   }
 });
 
-mongoose
-  .connect(process.env.DATABASE_LOCAL)
-  .then(() => {
-    console.log("DB connection successful");
-  })
-  .catch((err) => {
-    console.error("DB connection error:", err);
-  });
-const port = process.env.PORT || 8000;
+const DB = process.env.DATABASE.replace(
+  "<PASSWORD>",
+  process.env.DATABASE_PASSWORD,
+);
+
+mongoose.connect(DB).then(() => {
+  console.log("DB connections successful");
+});
+
+// mongoose
+//   .connect(process.env.DATABASE_LOCAL)
+//   .then(() => {
+//     console.log("DB connection successful");
+//   })
+//   .catch((err) => {
+//     console.error("DB connection error:", err);
+//   });
+
+const port = process.env.PORT || 3000;
 
 const server = app.listen(port, () => {
   console.log(`Server is running on ${port}...`);
