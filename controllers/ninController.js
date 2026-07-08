@@ -1,7 +1,6 @@
 const Nin = require("../models/ninModel");
 const NibssServices = require("../services/nibssServices");
 const catchAsync = require("../utils/catchAsync");
-const AppError = require("../utils/appError");
 
 exports.insertNin = catchAsync(async (req, res, next) => {
   const { nin, firstName, lastName, dob, phone } = req.body;
