@@ -32,7 +32,7 @@ exports.welcomeEmail = (user) => {
           
           <p><strong>Your Account Details:</strong></p>
           <ul>
-            <li><strong>Account Number:</strong> ${neUuser.account?.accountNumber}</li>
+            <li><strong>Account Number:</strong> ${newUser.account?.accountNumber}</li>
             <li><strong>Email:</strong> ${user.email}</li>
             <li><strong>Phone:</strong> ${newUser.phone}</li>
           </ul>
